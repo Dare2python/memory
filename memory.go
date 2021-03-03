@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
+	"runtime/pprof"
 	"time"
 
 	"golang.org/x/text/language"
@@ -16,9 +18,13 @@ type smallStruct struct {
 }
 
 func main() {
-	memPrint()
+	pprof.StartCPUProfile(os.Stdout)
+	defer pprof.StopCPUProfile()
+	//go build -o app && time ./app > cpu.profile
+	// go tool pprof cpu.profile
+	// memPrint()
 	smallAllocation()
-	memPrint()
+	// memPrint()
 
 	for i := 0; i < 1024; i++ { //1024
 		s := bigBytes()
@@ -27,7 +33,7 @@ func main() {
 		}
 	}
 
-	memPrint()
+	// memPrint()
 
 }
 
@@ -58,7 +64,7 @@ func memPrint() {
 	p.Printf("Sys %+v\n", mem.Sys)
 }
 
-// bigBytes allocates 100 megabytes
+// bigBytes allocates 1 gigabyte
 func bigBytes() *[]byte {
 	s := make([]byte, 1024*1024*1024)
 	return &s
